@@ -1,0 +1,16 @@
+tp\isilB\conference\repositories\EvaluateurRepository.class
+tp\isilB\conference\services\ConferenceService.class
+tp\isilB\conference\entities\Auteur.class
+tp\isilB\conference\entities\utilisateur.class
+tp\isilB\conference\repositories\AuteurRepository.class
+tp\isilB\conference\controllers\EvaluateurController.class
+tp\isilB\conference\entities\Conference.class
+tp\isilB\conference\entities\Evaluateur.class
+tp\isilB\conference\services\EvaluationService.class
+tp\isilB\conference\entities\Editeur.class
+tp\isilB\conference\entities\Evaluation.class
+tp\isilB\conference\repositories\ConferenceRepository.class
+tp\isilB\conference\controllers\AuteurController.class
+tp\isilB\conference\repositories\EvaluationRepository.class
+tp\isilB\conference\repositories\SoumissionRepository.class
+tp\isilB\conference\entities\Soumission.class
