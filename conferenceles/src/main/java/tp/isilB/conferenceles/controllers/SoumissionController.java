@@ -3,8 +3,10 @@ package tp.isilB.conferenceles.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tp.isilB.conferenceles.entities.Editeur;
 import tp.isilB.conferenceles.entities.Evaluateur;
 import tp.isilB.conferenceles.entities.Soumission;
+import tp.isilB.conferenceles.repositries.EditeurRepository;
 import tp.isilB.conferenceles.repositries.EvaluateurRepository;
 import tp.isilB.conferenceles.repositries.SoumissionRepository;
 import tp.isilB.conferenceles.services.SoumissionService;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/soumissions")
 public class SoumissionController {
+
     @Autowired
     private SoumissionRepository soumissionRepository;
 
@@ -22,6 +25,10 @@ public class SoumissionController {
 
     @Autowired
     private SoumissionService soumissionService;
+
+    @Autowired
+    private EditeurRepository editeurRepository;
+
 
     @GetMapping
     public List<Soumission> getAllSoumissions() {
@@ -49,6 +56,34 @@ public class SoumissionController {
         }
 
         soumissionService.affecterEvaluateurs(soumission, evaluateurs);
+
+        return ResponseEntity.ok(soumission);
+    }
+
+
+
+    @PostMapping("/{soumissionId}/affecter-evaluateurs")
+    public ResponseEntity<?> affecterEvaluateursParEditeur(
+            @PathVariable Long soumissionId,
+            @RequestBody List<Long> evaluateurIds,
+            @RequestParam Long editeurId) {
+
+        // Vérifiez que l'éditeur existe
+        Editeur editeur = editeurRepository.findById(editeurId)
+                .orElseThrow(() -> new RuntimeException("Éditeur introuvable"));
+
+        // Récupérez la soumission
+        Soumission soumission = soumissionRepository.findById(soumissionId)
+                .orElseThrow(() -> new RuntimeException("Soumission introuvable"));
+
+        // Récupérez les évaluateurs
+        List<Evaluateur> evaluateurs = evaluateurRepository.findAllById(evaluateurIds);
+        if (evaluateurs.size() != evaluateurIds.size()) {
+            throw new RuntimeException("Un ou plusieurs évaluateurs n'existent pas.");
+        }
+
+        // Appeler le service pour affecter les évaluateurs
+        soumissionService.affecterEvaluateursParEditeur(soumission, evaluateurs, editeur);
 
         return ResponseEntity.ok(soumission);
     }

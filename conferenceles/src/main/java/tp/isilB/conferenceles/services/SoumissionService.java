@@ -2,10 +2,7 @@ package tp.isilB.conferenceles.services;
 
 
 import org.springframework.stereotype.Service;
-import tp.isilB.conferenceles.entities.Auteur;
-import tp.isilB.conferenceles.entities.Evaluateur;
-import tp.isilB.conferenceles.entities.Soumission;
-import tp.isilB.conferenceles.entities.utilisateur;
+import tp.isilB.conferenceles.entities.*;
 import tp.isilB.conferenceles.repositries.utilisateurRepository;
 import tp.isilB.conferenceles.repositries.SoumissionRepository;
 
@@ -46,5 +43,28 @@ public class SoumissionService {
         }
         soumission.setAuteur((Auteur) utilisateur);
         return soumissionRepository.save(soumission);
+    }
+
+
+    public void affecterEvaluateursParEditeur(Soumission soumission, List<Evaluateur> evaluateurs, Editeur editeur) {
+        if (!editeur.getRoles().contains("Editeur")) {
+            throw new RuntimeException("Cet utilisateur n'a pas le rôle d'éditeur.");
+        }
+
+        // Vérifiez si un évaluateur est également un auteur de la soumission
+        for (Evaluateur evaluateur : evaluateurs) {
+            if (soumission.getAuteurs().stream().anyMatch(auteur -> auteur.getId().equals(evaluateur.getId()))) {
+                throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est l'auteur.");
+            }
+        }
+
+        // Supprimer les doublons dans la liste des évaluateurs
+        List<Evaluateur> uniqueEvaluateurs = evaluateurs.stream().distinct().collect(Collectors.toList());
+
+        // Affecter les évaluateurs à la soumission
+        soumission.setEvaluateurs(uniqueEvaluateurs);
+
+        // Sauvegarder les changements
+        soumissionRepository.save(soumission);
     }
 }

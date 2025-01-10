@@ -4,7 +4,7 @@ import tp.isilB.conferenceles.entities.Soumission;
 
 import java.util.List;
 
-public interface     SoumissionRepository  extends JpaRepository<Soumission, Long>{
+public interface  SoumissionRepository  extends JpaRepository<Soumission, Long>{
     List<Soumission> findByAuteurId(Long auteurId);
 
 }

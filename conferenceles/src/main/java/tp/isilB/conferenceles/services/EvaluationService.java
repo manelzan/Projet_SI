@@ -40,10 +40,9 @@ public class EvaluationService {
                 .orElseThrow(() -> new RuntimeException("Soumission introuvable"));
 
         // Vérification : l'évaluateur ne peut pas être l'auteur de la soumission
-        if (soumission.getAuteur().getId().equals(utilisateur.getId())) {
+        if (soumission.getAuteurs().stream().anyMatch(auteur -> auteur.getId().equals(utilisateur.getId()))) {
             throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est l'auteur.");
         }
-
         // Affecter l'évaluateur et la soumission à l'évaluation
         evaluation.setEvaluateur((Evaluateur) utilisateur);
         evaluation.setSoumission(soumission);

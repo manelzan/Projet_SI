@@ -10,9 +10,7 @@ import tp.isilB.conferenceles.services.*;
 import tp.isilB.conferenceles.repositries.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 @SpringBootApplication
 public class ConferencelesApplication implements CommandLineRunner {
@@ -55,9 +53,18 @@ public class ConferencelesApplication implements CommandLineRunner {
 		System.out.println("Conférence créée : " + conference1.getTitre());
 		Conference conference2 = conferenceRepository.save(new Conference(null, "Conférence sur le Big Data", LocalDate.of(2025, 2, 5), LocalDate.of(2026, 2, 10), "Big Data", "ouverte", editeur2, null));
 		// Création des soumissions
-		Soumission soumission1 = soumissionRepository.save(new Soumission(null, "Titre 1", "Résumé 1", "document1.pdf", auteur1, conference1, null));
-		Soumission soumission2 = soumissionRepository.save(new Soumission(null, "Titre 2", "Résumé 2", "document2.pdf", auteur3, conference1, null));
-		Soumission soumission3 = soumissionRepository.save(new Soumission(null, "Titre 3", "Résumé 3", "document3.pdf", auteur2, conference1, new ArrayList<>()));
+		Soumission soumission2 = soumissionRepository.save(
+				new Soumission(null, "Titre 2", "Résumé 2", "document2.pdf", conference2, new ArrayList<>(Arrays.asList(auteur2)))
+		);
+
+		Soumission soumission3 = soumissionRepository.save(
+				new Soumission(null, "Titre 3", "Résumé 3", "document3.pdf", conference2, new ArrayList<>(Arrays.asList(auteur3)))
+		);
+		Soumission soumission1 = soumissionRepository.save(
+				new Soumission(null, "Titre 1", "Résumé 1", "document1.pdf", conference1, new ArrayList<>(Collections.singletonList(auteur1)))
+		);
+
+
 		// Création des évaluateurs
 		Evaluateur evaluateur1 = evaluateurRepository.save(new Evaluateur("Evaluateur 1", "Prenom Evaluateur 1","evaluateur1@example.com"));
 		Evaluateur evaluateur2 = evaluateurRepository.save(new Evaluateur("Evaluateur 2","Prenom Evaluateur 2 ","evaluateur2@example.com"));
