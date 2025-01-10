@@ -10,7 +10,11 @@ import tp.isilB.conferenceles.entities.Evaluateur;
 import tp.isilB.conferenceles.repositries.AuteurRepository;
 import tp.isilB.conferenceles.repositries.EditeurRepository;
 import tp.isilB.conferenceles.repositries.EvaluateurRepository;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/utilisateurs")
@@ -28,8 +32,11 @@ public class utilisateurController {
     private EvaluateurRepository evaluateurRepository;
 
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<utilisateur> createUtilisateur(@RequestBody utilisateur utilisateur) {
+        if (utilisateur.getRoles() == null || utilisateur.getRoles().isEmpty()) {
+            utilisateur.setRoles(new HashSet<>(Set.of("ROLE_USER"))); // Rôle par défaut si aucun n'est fourni
+        }
         utilisateur savedUser = utilisateurRepository.save(utilisateur);
         return ResponseEntity.ok(savedUser);
     }
@@ -60,6 +67,18 @@ public class utilisateurController {
         if (utilisateurOpt.isPresent()) {
             utilisateur utilisateur = utilisateurOpt.get();
             utilisateur.getRoles().add(role);
+            utilisateurRepository.save(utilisateur);
+            return ResponseEntity.ok(utilisateur);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{id}/roles/multiple")
+    public ResponseEntity<utilisateur> addRolesToUtilisateur(@PathVariable Long id, @RequestBody List<String> roles) {
+        Optional<utilisateur> utilisateurOpt = utilisateurRepository.findById(id);
+        if (utilisateurOpt.isPresent()) {
+            utilisateur utilisateur = utilisateurOpt.get();
+            utilisateur.getRoles().addAll(roles); // Ajoute plusieurs rôles
             utilisateurRepository.save(utilisateur);
             return ResponseEntity.ok(utilisateur);
         }

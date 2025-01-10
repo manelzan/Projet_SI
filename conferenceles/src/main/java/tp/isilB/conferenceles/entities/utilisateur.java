@@ -1,5 +1,7 @@
 package tp.isilB.conferenceles.entities;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -16,6 +18,13 @@ import java.util.Set;
     @NoArgsConstructor
     @Getter
     @Setter
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = Auteur.class, name = "Auteur"),
+            @JsonSubTypes.Type(value = Editeur.class, name = "Editeur"),
+            @JsonSubTypes.Type(value = Evaluateur.class, name = "Evaluateur")
+    })
     public abstract class utilisateur {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
