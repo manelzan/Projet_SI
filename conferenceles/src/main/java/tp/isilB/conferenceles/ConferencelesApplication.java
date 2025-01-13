@@ -49,7 +49,7 @@ public class ConferencelesApplication implements CommandLineRunner {
 
 
 		// Créer une conférence avec un éditeur
-		Conference conference1 = conferenceRepository.save(new Conference(null,"Conférence IA",LocalDate.of(2025, 1, 15), LocalDate.of(2025, 1, 16), "IA", "ouverte", editeur1 ,null));
+		Conference conference1 = conferenceRepository.save(new Conference(null,"Conférence IA",LocalDate.of(2025, 1, 20), LocalDate.of(2025, 1, 25), "IA", "ouverte", editeur1 ,null));
 		System.out.println("Conférence créée : " + conference1.getTitre());
 		Conference conference2 = conferenceRepository.save(new Conference(null, "Conférence sur le Big Data", LocalDate.of(2025, 2, 5), LocalDate.of(2026, 2, 10), "Big Data", "ouverte", editeur2, null));
 		// Création des soumissions

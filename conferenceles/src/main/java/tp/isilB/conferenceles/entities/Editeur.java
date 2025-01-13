@@ -21,6 +21,6 @@ public class Editeur extends utilisateur {
     private List<Conference> conferences;
 
     public Editeur(String nom, String prenom, String email) {
-        super(null, nom, prenom, email, new HashSet<>(Set.of("Editeur")));
+        super(null, nom, prenom, email, Set.of("Editeur"));
     }
 }

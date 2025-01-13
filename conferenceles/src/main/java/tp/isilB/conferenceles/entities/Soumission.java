@@ -68,6 +68,13 @@ public class Soumission {
     private List<Evaluation> evaluations = new ArrayList<>();
 
 
+    public void addEvaluateur(Evaluateur evaluateur) {
+        if (auteurs.contains(evaluateur)) {
+            throw new IllegalArgumentException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
+        }
+        evaluateurs.add(evaluateur);
+    }
+
     public Soumission(Long id, String titre, String resume, String documentPdf, Conference conference, List<Auteur> auteurs) {
         this.id = id;
         this.titre = titre;

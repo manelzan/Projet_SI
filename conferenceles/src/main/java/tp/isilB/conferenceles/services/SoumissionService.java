@@ -67,4 +67,17 @@ public class SoumissionService {
         // Sauvegarder les changements
         soumissionRepository.save(soumission);
     }
+    public void affecterEvaluateurs(Long soumissionId, List<Evaluateur> evaluateurs) {
+        Soumission soumission = soumissionRepository.findById(soumissionId)
+                .orElseThrow(() -> new IllegalArgumentException("Soumission introuvable avec l'ID : " + soumissionId));
+
+        for (Evaluateur evaluateur : evaluateurs) {
+            if (soumission.getAuteurs().contains(evaluateur)) {
+                throw new IllegalArgumentException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
+            }
+            soumission.addEvaluateur(evaluateur);
+        }
+
+        soumissionRepository.save(soumission);
+    }
 }

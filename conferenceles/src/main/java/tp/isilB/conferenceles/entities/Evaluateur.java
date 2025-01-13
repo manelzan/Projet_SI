@@ -28,4 +28,5 @@ public class Evaluateur extends utilisateur {
     @OneToMany(mappedBy = "evaluateur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evaluation> evaluations = new ArrayList<>();
 
+
 }

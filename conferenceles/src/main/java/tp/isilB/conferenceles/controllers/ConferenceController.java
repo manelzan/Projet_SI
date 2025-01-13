@@ -11,44 +11,43 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @RestController
 @RequestMapping("/conferences")
 public class ConferenceController {
 
     @Autowired
-    private ConferenceService conferenceService;
+    private ConferenceRepository conferenceRepository;
 
-    @PostMapping("/{editeurId}")
-    public ResponseEntity<Conference> createConference(@PathVariable Long editeurId, @RequestBody Conference conference) {
-        Conference createdConference = conferenceService.createConference(editeurId, conference);
-        return ResponseEntity.ok(createdConference);
-    }
+    @Autowired
+    private EditeurRepository editeurRepository;
 
     @GetMapping
     public List<Conference> getAllConferences() {
-        return conferenceService.getAllConferences();
+        return conferenceRepository.findAll();
     }
 
-    @GetMapping("/editeur/{editeurId}")
-    public List<Conference> getConferencesByEditeur(@PathVariable Long editeurId) {
-        return conferenceService.getConferencesByEditeur(editeurId);
-    }
+    @PostMapping
+    public ResponseEntity<?> createConference(@Valid @RequestBody Conference conference) {
+        // Vérifiez que l'éditeur existe
+        Long editeurId = conference.getEditeur().getId();
+        Editeur editeur = editeurRepository.findById(editeurId)
+                .orElseThrow(() -> new RuntimeException("Éditeur introuvable"));
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Conference> updateConference(@PathVariable Long id, @RequestBody Conference conference) {
-        Conference updatedConference = conferenceService.updateConference(id, conference);
-        return ResponseEntity.ok(updatedConference);
-    }
+        conference.setEditeur(editeur);
+        Conference createdConference = conferenceRepository.save(conference);
 
-    @PatchMapping("/{id}/etat")
-    public ResponseEntity<Conference> updateConferenceState(@PathVariable Long id, @RequestBody String nouvelEtat) {
-        Conference updatedConference = conferenceService.updateConferenceState(id, nouvelEtat);
-        return ResponseEntity.ok(updatedConference);
+        return ResponseEntity.ok(createdConference);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConference(@PathVariable Long id) {
-        conferenceService.deleteConference(id);
+        if (!conferenceRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        conferenceRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

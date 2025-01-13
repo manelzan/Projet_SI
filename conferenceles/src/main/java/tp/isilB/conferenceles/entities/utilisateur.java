@@ -19,7 +19,7 @@ import java.util.Set;
     @Getter
     @Setter
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true) // Visible=true pour inclure le champ "type" dans la sérialisation
     @JsonSubTypes({
             @JsonSubTypes.Type(value = Auteur.class, name = "Auteur"),
             @JsonSubTypes.Type(value = Editeur.class, name = "Editeur"),
