@@ -1,7 +1,7 @@
 package tp.isilB.conferenceles.entities;
 
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,6 +47,7 @@ public class Conference {
     private String etat;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "editeur_id", nullable = false)
     @NotNull(message = "Un éditeur est obligatoire pour créer une conférence")
     private Editeur editeur;
