@@ -18,6 +18,8 @@ import java.util.Set;
 @Setter
 public class Editeur extends utilisateur {
     @OneToMany(mappedBy = "editeur", cascade = CascadeType.ALL, orphanRemoval = true)
+     @JsonIgnore
+    @JsonManagedReference
     private List<Conference> conferences;
 
     public Editeur(String nom, String prenom, String email) {
