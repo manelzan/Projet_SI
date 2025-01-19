@@ -1,8 +1,10 @@
 package tp.isilB.conferenceles.services;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tp.isilB.conferenceles.entities.*;
+import tp.isilB.conferenceles.repositries.ConferenceRepository;
 import tp.isilB.conferenceles.repositries.utilisateurRepository;
 import tp.isilB.conferenceles.repositries.SoumissionRepository;
 
@@ -20,7 +22,16 @@ public class SoumissionService {
         this.utilisateurRepository = utilisateurRepository;
 
     }
+    @Autowired
+    private ConferenceRepository conferenceRepository;
 
+    public Soumission addSoumissionToConference(Long conferenceId, Soumission soumission) {
+        Conference conference = conferenceRepository.findById(conferenceId)
+                .orElseThrow(() -> new RuntimeException("Conférence introuvable"));
+
+        soumission.setConference(conference);
+        return soumissionRepository.save(soumission);
+    }
     public void affecterEvaluateurs(Soumission soumission, List<Evaluateur> evaluateurs) {
         for (Evaluateur evaluateur : evaluateurs) {
             if (soumission.getAuteur().getId().equals(evaluateur.getId())) {

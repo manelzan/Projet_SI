@@ -1,13 +1,8 @@
 package tp.isilB.conferenceles.services;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tp.isilB.conferenceles.entities.Evaluateur;
-import tp.isilB.conferenceles.entities.Evaluation;
-import tp.isilB.conferenceles.entities.Soumission;
-import tp.isilB.conferenceles.entities.utilisateur;
-import tp.isilB.conferenceles.repositries.EvaluateurRepository;
-import tp.isilB.conferenceles.repositries.EvaluationRepository;
-import tp.isilB.conferenceles.repositries.SoumissionRepository;
-import tp.isilB.conferenceles.repositries.utilisateurRepository;
+import tp.isilB.conferenceles.entities.*;
+import tp.isilB.conferenceles.repositries.*;
 
 import java.util.List;
 @Service
@@ -61,4 +56,32 @@ public class EvaluationService {
         return evaluationRepository.findByEvaluateurId(evaluateurId);
     }
 
+
+    @Autowired
+    private ConferenceRepository conferenceRepository;
+
+    /**
+     * Récupérer les évaluations associées aux soumissions d'un éditeur.
+     *
+     * @param editeurId L'ID de l'éditeur.
+     * @return Liste des évaluations.
+     */
+    public List<Evaluation> getEvaluationsByEditeur(Long editeurId) {
+        // Récupérer les conférences de l'éditeur
+        List<Conference> conferences = conferenceRepository.findByEditeurId(editeurId);
+
+        // Si aucune conférence n'est associée, retourner une liste vide
+        if (conferences.isEmpty()) {
+            return List.of();
+        }
+
+        System.out.println("Conférences pour l'éditeur : " + conferences.size());
+        conferences.forEach(conf -> System.out.println("Soumissions pour la conférence : " + conf.getSoumissions().size()));
+
+        // Récupérer les évaluations associées aux soumissions des conférences
+        return conferences.stream()
+                .flatMap(conference -> conference.getSoumissions().stream()) // Récupère les soumissions des conférences
+                .flatMap(soumission -> soumission.getEvaluations().stream()) // Récupère les évaluations des soumissions
+                .toList(); // Retourne une liste d'évaluations
+  }
 }

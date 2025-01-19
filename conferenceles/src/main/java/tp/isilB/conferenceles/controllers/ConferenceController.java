@@ -5,10 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tp.isilB.conferenceles.entities.Conference;
 import tp.isilB.conferenceles.entities.Editeur;
+import tp.isilB.conferenceles.entities.Soumission;
 import tp.isilB.conferenceles.repositries.EditeurRepository;
 import tp.isilB.conferenceles.services.ConferenceService;
 
 import jakarta.validation.Valid;
+import tp.isilB.conferenceles.services.SoumissionService;
+
 import java.util.List;
 import java.time.LocalDate;
 import java.util.List;
@@ -60,4 +63,15 @@ public class ConferenceController {
              conferenceService.deleteConference(id);
             return ResponseEntity.noContent().build();
         }
+
+    @Autowired
+    private SoumissionService soumissionService;
+
+    @PostMapping("/{conferenceId}/soumissions")
+    public ResponseEntity<Soumission> addSoumissionToConference(
+            @PathVariable Long conferenceId,
+            @RequestBody Soumission soumission) {
+        Soumission savedSoumission = soumissionService.addSoumissionToConference(conferenceId, soumission);
+        return ResponseEntity.ok(savedSoumission);
+    }
     }

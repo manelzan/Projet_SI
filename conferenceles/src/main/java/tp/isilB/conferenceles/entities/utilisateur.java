@@ -13,35 +13,34 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
-    @Entity
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true) // Visible=true pour inclure le champ "type" dans la sérialisation
-    @JsonSubTypes({
-            @JsonSubTypes.Type(value = Auteur.class, name = "Auteur"),
-            @JsonSubTypes.Type(value = Editeur.class, name = "Editeur"),
-            @JsonSubTypes.Type(value = Evaluateur.class, name = "Evaluateur")
-    })
-    public abstract class utilisateur {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true) // Visible=true pour inclure le champ "type" dans la sérialisation
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Auteur.class, name = "Auteur"),
+        @JsonSubTypes.Type(value = Editeur.class, name = "Editeur"),
+        @JsonSubTypes.Type(value = Evaluateur.class, name = "Evaluateur")
+})
+public abstract class utilisateur {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        private String nom;
+    private String nom;
 
-        private String prenom;
+    private String prenom;
 
-        private String email;
+    private String email;
 
-        @ElementCollection(fetch = FetchType.EAGER)
-        @CollectionTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"))
-        @Column(name = "role")
-        private Set<String> roles = new HashSet<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"))
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
 
 
 
-    }
-
+}

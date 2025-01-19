@@ -1,4 +1,5 @@
 package tp.isilB.conferenceles.entities;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
+@JsonIgnoreProperties({"evaluateurs", "auteurs"})
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
