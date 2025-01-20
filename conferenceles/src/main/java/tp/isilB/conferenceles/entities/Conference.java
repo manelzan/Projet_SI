@@ -1,6 +1,6 @@
-
 package tp.isilB.conferenceles.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.FutureOrPresent;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +33,7 @@ public class Conference {
 
     @Column(nullable = false)
 
-    @FutureOrPresent(message = "La date de début doit être dans le futur ou aujourd'hui")
+  @FutureOrPresent(message = "La date de début doit être dans le futur ou aujourd'hui")
     private LocalDate dateDebut;
 
 
@@ -48,6 +48,7 @@ public class Conference {
     private String etat;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "editeur_id", nullable = false)
     @NotNull(message = "Un éditeur est obligatoire pour créer une conférence")
     private Editeur editeur;

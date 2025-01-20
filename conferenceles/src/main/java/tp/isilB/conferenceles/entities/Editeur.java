@@ -1,4 +1,6 @@
 package tp.isilB.conferenceles.entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +9,7 @@ import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +21,9 @@ import java.util.Set;
 @Setter
 public class Editeur extends utilisateur {
     @OneToMany(mappedBy = "editeur", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Conference> conferences;
+    @JsonIgnore
+    @JsonManagedReference
+    private List<Conference> conferences= new ArrayList<>();;
 
     public Editeur(String nom, String prenom, String email) {
         super(null, nom, prenom, email, Set.of("Editeur"));

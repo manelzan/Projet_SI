@@ -1,17 +1,19 @@
 package tp.isilB.conferenceles.services;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tp.isilB.conferenceles.entities.Evaluateur;
-import tp.isilB.conferenceles.entities.Evaluation;
-import tp.isilB.conferenceles.entities.Soumission;
-import tp.isilB.conferenceles.entities.utilisateur;
-import tp.isilB.conferenceles.repositries.EvaluateurRepository;
-import tp.isilB.conferenceles.repositries.EvaluationRepository;
-import tp.isilB.conferenceles.repositries.SoumissionRepository;
-import tp.isilB.conferenceles.repositries.utilisateurRepository;
+import tp.isilB.conferenceles.DTO.EvaluationCreationDTO;
+import tp.isilB.conferenceles.DTO.EvaluationDTO;
+import tp.isilB.conferenceles.entities.*;
+import tp.isilB.conferenceles.repositries.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class EvaluationService {
+    @Autowired
+    private ConferenceRepository conferenceRepository;
+
 
     private final EvaluationRepository evaluationRepository;
     private final SoumissionRepository soumissionRepository;
@@ -25,40 +27,73 @@ public class EvaluationService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public Evaluation ajouterEvaluation(Long evaluateurId, Long soumissionId, Evaluation evaluation) {
-        // Récupérer l'utilisateur correspondant à l'ID donné
-        utilisateur utilisateur = utilisateurRepository.findById(evaluateurId)
+    // Conversion Evaluation vers EvaluationDTO
+    private EvaluationDTO toDTO(Evaluation evaluation) {
+        return new EvaluationDTO(
+                evaluation.getId(),
+                evaluation.getEvaluateur().getId(),
+                evaluation.getSoumission().getId(),
+                evaluation.getNote(),
+                evaluation.getCommentaires(),
+                evaluation.getEtat().toString()
+        );
+    }
+
+    // Conversion EvaluationCreationDTO vers Evaluation
+    private Evaluation toEntity(EvaluationCreationDTO evaluationCreationDTO, Evaluateur evaluateur, Soumission soumission) {
+        return new Evaluation(
+                null, // ID auto-généré
+                evaluateur,
+                soumission,
+                evaluationCreationDTO.getNote(),
+                evaluationCreationDTO.getCommentaires(),
+                EtatEvaluation.valueOf(evaluationCreationDTO.getEtat().toUpperCase())
+        );
+    }
+
+    public EvaluationDTO ajouterEvaluation(EvaluationCreationDTO evaluationCreationDTO) {
+        // Vérifications similaires à celles déjà existantes dans votre méthode actuelle
+
+        Evaluateur evaluateur = utilisateurRepository.findById(evaluationCreationDTO.getEvaluateurId())
+                .filter(user -> user instanceof Evaluateur)
+                .map(user -> (Evaluateur) user)
                 .orElseThrow(() -> new RuntimeException("Évaluateur introuvable"));
 
-        // Vérification : l'utilisateur doit avoir le rôle 'Evaluateur'
-        if (!utilisateur.getRoles().contains("Evaluateur")) {
-            throw new RuntimeException("Cet utilisateur n'a pas le rôle d'évaluateur.");
-        }
-
-        // Récupérer la soumission
-        Soumission soumission = soumissionRepository.findById(soumissionId)
+        Soumission soumission = soumissionRepository.findById(evaluationCreationDTO.getSoumissionId())
                 .orElseThrow(() -> new RuntimeException("Soumission introuvable"));
 
-        // Vérification : l'évaluateur ne peut pas être l'auteur de la soumission
-        if (soumission.getAuteurs().stream().anyMatch(auteur -> auteur.getId().equals(utilisateur.getId()))) {
-            throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est l'auteur.");
+        Evaluation evaluation = toEntity(evaluationCreationDTO, evaluateur, soumission);
+        Evaluation savedEvaluation = evaluationRepository.save(evaluation);
+        return toDTO(savedEvaluation);
+    }
+
+    public List<EvaluationDTO> getEvaluationsBySoumission(Long soumissionId) {
+        return evaluationRepository.findBySoumissionId(soumissionId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EvaluationDTO> getEvaluationsByEvaluateur(Long evaluateurId) {
+        return evaluationRepository.findByEvaluateurId(evaluateurId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+    public List<EvaluationDTO> getEvaluationsByEditeur(Long editeurId) {
+        // Récupérer les conférences de l'éditeur
+        List<Conference> conferences = conferenceRepository.findByEditeurId(editeurId);
+
+        if (conferences.isEmpty()) {
+            throw new RuntimeException("Aucune conférence trouvée pour l'éditeur avec ID : " + editeurId);
         }
-        // Affecter l'évaluateur et la soumission à l'évaluation
-        evaluation.setEvaluateur((Evaluateur) utilisateur);
-        evaluation.setSoumission(soumission);
 
-        // Sauvegarder l'évaluation
-        return evaluationRepository.save(evaluation);
+        // Récupérer toutes les évaluations associées aux soumissions des conférences
+        return conferences.stream()
+                .flatMap(conf -> conf.getSoumissions().stream()) // Soumissions des conférences
+                .flatMap(soumission -> soumission.getEvaluations().stream()) // Évaluations des soumissions
+                .map(this::toDTO) // Convertir en DTO
+                .collect(Collectors.toList());
     }
-
-    // Méthode pour récupérer les évaluations d'une soumission
-    public List<Evaluation> getEvaluationsBySoumission(Long soumissionId) {
-        return evaluationRepository.findBySoumissionId(soumissionId);
-    }
-
-    // Méthode pour récupérer les évaluations d'un évaluateur
-    public List<Evaluation> getEvaluationsByEvaluateur(Long evaluateurId) {
-        return evaluationRepository.findByEvaluateurId(evaluateurId);
-    }
-
 }
