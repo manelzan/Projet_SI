@@ -111,4 +111,14 @@ public class SoumissionService {
         soumission.getEvaluateurs().add(evaluateur);
         return soumissionRepository.save(soumission);
     }
+     @Autowired
+    private ConferenceRepository conferenceRepository;
+
+    public Soumission addSoumissionToConference(Long conferenceId, Soumission soumission) {
+        Conference conference = conferenceRepository.findById(conferenceId)
+                .orElseThrow(() -> new RuntimeException("Conférence introuvable"));
+
+        soumission.setConference(conference);
+        return soumissionRepository.save(soumission);
+    }
 }
