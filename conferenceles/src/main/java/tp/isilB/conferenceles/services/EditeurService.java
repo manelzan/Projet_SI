@@ -7,7 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import tp.isilB.conferenceles.DTO.ConferenceDTO;
 import tp.isilB.conferenceles.DTO.EditeurDTO;
 import tp.isilB.conferenceles.entities.Editeur;
+import tp.isilB.conferenceles.entities.Evaluateur;
+import tp.isilB.conferenceles.entities.Soumission;
 import tp.isilB.conferenceles.repositries.EditeurRepository;
+import tp.isilB.conferenceles.repositries.EvaluateurRepository;
+import tp.isilB.conferenceles.repositries.SoumissionRepository;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -19,6 +23,11 @@ import java.util.stream.Collectors;
 public class EditeurService {
     @Autowired
     private EditeurRepository editeurRepository;
+    @Autowired
+    private SoumissionRepository soumissionRepository;
+    @Autowired
+    private EvaluateurRepository evaluateurRepository;
+
 
     public Editeur createEditeur(Editeur editeur) {
         return editeurRepository.save(editeur);
@@ -90,7 +99,40 @@ public class EditeurService {
         );
     }
 
+    public void affecterEvaluateurs(Long editeurId, Long soumissionId, List<Long> evaluateurIds) {
+        // Vérifier que l'éditeur existe
+        Editeur editeur = editeurRepository.findById(editeurId)
+                .orElseThrow(() -> new RuntimeException("Éditeur introuvable avec ID : " + editeurId));
 
+        // Vérifier que la soumission existe
+        Soumission soumission = soumissionRepository.findById(soumissionId)
+                .orElseThrow(() -> new RuntimeException("Soumission introuvable avec ID : " + soumissionId));
+
+        // Vérifier que l'éditeur est associé à la conférence de la soumission
+        if (!soumission.getConference().getEditeur().getId().equals(editeurId)) {
+            throw new RuntimeException("Cet éditeur ne peut pas affecter cette soumission.");
+        }
+
+        // Récupérer les évaluateurs à partir de leurs IDs
+        List<Evaluateur> evaluateurs = evaluateurRepository.findAllById(evaluateurIds);
+
+        if (evaluateurs.isEmpty() || evaluateurs.size() != evaluateurIds.size()) {
+            throw new RuntimeException("Un ou plusieurs évaluateurs sont introuvables.");
+        }
+
+        // Vérifiez que les évaluateurs ne sont pas auteurs de la soumission
+        for (Evaluateur evaluateur : evaluateurs) {
+            if (soumission.getAuteurs().stream().anyMatch(auteur -> auteur.getId().equals(evaluateur.getId()))) {
+                throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
+            }
+        }
+
+        // Affecter les évaluateurs à la soumission
+        soumission.getEvaluateurs().addAll(evaluateurs);
+
+        // Sauvegarder la soumission mise à jour
+        soumissionRepository.save(soumission);
+    }
 
 
 }

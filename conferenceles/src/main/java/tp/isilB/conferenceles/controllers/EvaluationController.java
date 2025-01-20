@@ -1,10 +1,14 @@
 package tp.isilB.conferenceles.controllers;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tp.isilB.conferenceles.DTO.EvaluationCreationDTO;
 import tp.isilB.conferenceles.DTO.EvaluationDTO;
+import tp.isilB.conferenceles.entities.EtatEvaluation;
 import tp.isilB.conferenceles.entities.Evaluation;
 import tp.isilB.conferenceles.services.EvaluationService;
 import java.util.List;
@@ -47,6 +51,21 @@ public class EvaluationController {
 
             return ResponseEntity.ok(evaluations);
     }
+
+/*
+
+    @PostMapping("/{evaluationId}/evaluer")
+    public ResponseEntity<Evaluation> evaluerSoumission(
+            @PathVariable Long evaluationId,
+            @RequestParam int note,
+            @RequestParam String commentaires,
+            @RequestParam EtatEvaluation etat) {
+        Evaluation evaluation = evaluationService.evaluerSoumission(evaluationId, note, commentaires, etat);
+        return ResponseEntity.ok(evaluation);
+    }
+*/
+
+
 }
 
 
