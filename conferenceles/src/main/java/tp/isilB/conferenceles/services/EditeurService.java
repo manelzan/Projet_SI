@@ -4,15 +4,11 @@ package tp.isilB.conferenceles.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tp.isilB.conferenceles.DTO.ConferenceDTO;
-import tp.isilB.conferenceles.DTO.EditeurDTO;
 import tp.isilB.conferenceles.entities.Editeur;
 import tp.isilB.conferenceles.repositries.EditeurRepository;
 
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -68,34 +64,16 @@ public class EditeurService {
         return editeurRepository.save(existingEditeur);
     }
 
-
+    /**
+     * Supprime un éditeur par son ID.
+     *
+     * @param id L'ID de l'éditeur à supprimer.
+     * @throws RuntimeException si l'éditeur n'existe pas.
+     */
     public void deleteEditeur(Long id) {
         if (!editeurRepository.existsById(id)) {
             throw new RuntimeException("Éditeur introuvable avec l'ID : " + id);
         }
         editeurRepository.deleteById(id);
-    }
-    public EditeurDTO getEditeurDTO(Long editeurId) {
-        Editeur editeur = editeurRepository.findById(editeurId)
-                .orElseThrow(() -> new RuntimeException("Editeur introuvable"));
-
-        List<ConferenceDTO> conferenceDTOs = editeur.getConferences().stream()
-                .map(conference -> new ConferenceDTO(
-                        conference.getId(),
-                        conference.getTitre(),
-                        conference.getDateDebut(), // Directement LocalDate
-                        conference.getDateFin(),   // Directement LocalDate
-                        conference.getThematique(),
-                        conference.getEtat()
-                ))
-                .collect(Collectors.toList());
-
-        return new EditeurDTO(
-                editeur.getId(),
-                editeur.getNom(),
-                editeur.getPrenom(),
-                editeur.getEmail(),
-                conferenceDTOs
-        );
     }
 }

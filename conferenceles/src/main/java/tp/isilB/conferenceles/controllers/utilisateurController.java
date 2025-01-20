@@ -102,6 +102,28 @@ public class utilisateurController {
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<utilisateur> updateUtilisateur(@PathVariable Long id, @RequestBody utilisateur utilisateurDetails) {
+        Optional<utilisateur> utilisateurOpt = utilisateurRepository.findById(id);
+        if (utilisateurOpt.isPresent()) {
+            utilisateur utilisateur = utilisateurOpt.get();
+
+            // Mettre à jour les champs nécessaires
+            utilisateur.setNom(utilisateurDetails.getNom());
+            utilisateur.setEmail(utilisateurDetails.getEmail());
+            // Vous pouvez mettre à jour les rôles si nécessaire
+            utilisateur.getRoles().clear(); // Si vous souhaitez remplacer les rôles
+            utilisateur.getRoles().addAll(utilisateurDetails.getRoles());
+
+            // Sauvegarder l'utilisateur mis à jour
+            utilisateurRepository.save(utilisateur);
+
+            return ResponseEntity.ok(utilisateur);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
 
 
 }

@@ -1,12 +1,15 @@
 package tp.isilB.conferenceles.services;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tp.isilB.conferenceles.entities.*;
-import tp.isilB.conferenceles.repositries.ConferenceRepository;
 import tp.isilB.conferenceles.repositries.utilisateurRepository;
 import tp.isilB.conferenceles.repositries.SoumissionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
+import tp.isilB.conferenceles.repositries.AuteurRepository;
+import tp.isilB.conferenceles.repositries.EvaluateurRepository;
 
 
 import java.util.List;
@@ -14,7 +17,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class SoumissionService {
-    private final SoumissionRepository soumissionRepository;
+
+
+    @Autowired
+    private SoumissionRepository soumissionRepository;
+
+    @Autowired
+    private AuteurRepository auteurRepository;
+
+    @Autowired
+    private EvaluateurRepository evaluateurRepository;
+
+
     private final utilisateurRepository utilisateurRepository;
 
     public SoumissionService(SoumissionRepository soumissionRepository, utilisateurRepository utilisateurRepository) {
@@ -22,16 +36,7 @@ public class SoumissionService {
         this.utilisateurRepository = utilisateurRepository;
 
     }
-    @Autowired
-    private ConferenceRepository conferenceRepository;
 
-    public Soumission addSoumissionToConference(Long conferenceId, Soumission soumission) {
-        Conference conference = conferenceRepository.findById(conferenceId)
-                .orElseThrow(() -> new RuntimeException("Conférence introuvable"));
-
-        soumission.setConference(conference);
-        return soumissionRepository.save(soumission);
-    }
     public void affecterEvaluateurs(Soumission soumission, List<Evaluateur> evaluateurs) {
         for (Evaluateur evaluateur : evaluateurs) {
             if (soumission.getAuteur().getId().equals(evaluateur.getId())) {
@@ -78,17 +83,32 @@ public class SoumissionService {
         // Sauvegarder les changements
         soumissionRepository.save(soumission);
     }
-    public void affecterEvaluateurs(Long soumissionId, List<Evaluateur> evaluateurs) {
-        Soumission soumission = soumissionRepository.findById(soumissionId)
-                .orElseThrow(() -> new IllegalArgumentException("Soumission introuvable avec l'ID : " + soumissionId));
 
-        for (Evaluateur evaluateur : evaluateurs) {
-            if (soumission.getAuteurs().contains(evaluateur)) {
-                throw new IllegalArgumentException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
-            }
-            soumission.addEvaluateur(evaluateur);
+
+    public Soumission addAuteurToSoumission(Long soumissionId, Long auteurId) {
+        Soumission soumission = soumissionRepository.findById(soumissionId)
+                .orElseThrow(() -> new RuntimeException("Soumission introuvable avec ID : " + soumissionId));
+        Auteur auteur = auteurRepository.findById(auteurId)
+                .orElseThrow(() -> new RuntimeException("Auteur introuvable avec ID : " + auteurId));
+
+        // Ajouter l'auteur à la soumission
+        soumission.getAuteurs().add(auteur);
+        return soumissionRepository.save(soumission);
+    }
+
+    public Soumission addEvaluateurToSoumission(Long soumissionId, Long evaluateurId) {
+        Soumission soumission = soumissionRepository.findById(soumissionId)
+                .orElseThrow(() -> new RuntimeException("Soumission introuvable avec ID : " + soumissionId));
+        Evaluateur evaluateur = evaluateurRepository.findById(evaluateurId)
+                .orElseThrow(() -> new RuntimeException("Évaluateur introuvable avec ID : " + evaluateurId));
+
+        // Vérifier si l'évaluateur est un des auteurs de la soumission
+        if (soumission.getAuteurs().contains(evaluateur)) {
+            throw new IllegalArgumentException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
         }
 
-        soumissionRepository.save(soumission);
+        // Ajouter l'évaluateur à la soumission
+        soumission.getEvaluateurs().add(evaluateur);
+        return soumissionRepository.save(soumission);
     }
 }
