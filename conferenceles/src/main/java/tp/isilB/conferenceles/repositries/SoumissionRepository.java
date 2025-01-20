@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface  SoumissionRepository  extends JpaRepository<Soumission, Long>{
     List<Soumission> findByAuteurId(Long auteurId);
+   List<Soumission> findByConferenceId(Long conferenceId);
 
 }
