@@ -61,43 +61,48 @@ public class SoumissionController {
     }
 
 
-
     @PostMapping("/{soumissionId}/affecter-evaluateurs")
-    public ResponseEntity<?> affecterEvaluateursParEditeur(
+
+    public ResponseEntity<Soumission> affecterEvaluateurs(
             @PathVariable Long soumissionId,
             @RequestBody List<Long> evaluateurIds,
-            @RequestParam Long editeurId) {
+            @RequestParam(required = false) Long editeurId) {
 
-        // Vérification de l'existence de l'éditeur
-        Editeur editeur = editeurRepository.findById(editeurId)
-                .orElseThrow(() -> new RuntimeException("Éditeur introuvable"));
-
-        // Récupérer la soumission par son ID
+        // Récupérer la soumission
         Soumission soumission = soumissionRepository.findById(soumissionId)
                 .orElseThrow(() -> new RuntimeException("Soumission introuvable"));
 
-        // Récupérer la liste des évaluateurs par leurs IDs
+        // Vérifier si les évaluateurs existent
         List<Evaluateur> evaluateurs = evaluateurRepository.findAllById(evaluateurIds);
         if (evaluateurs.size() != evaluateurIds.size()) {
             throw new RuntimeException("Un ou plusieurs évaluateurs n'existent pas.");
         }
 
-        // Vérification qu'aucun évaluateur ne soit auteur de la soumission
+        // Vérifier qu'aucun évaluateur n'est auteur de cette soumission
         for (Evaluateur evaluateur : evaluateurs) {
-            // Vérifiez si l'auteur de l'évaluateur est dans la liste des auteurs de la soumission
-            boolean isAuteur = soumission.getAuteurs().stream()
-                    .anyMatch(auteur -> auteur.equals(evaluateur.getAuteur()));
-
-            if (isAuteur) {
-                throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
+            // Parcourez les auteurs de la soumission pour voir si l'évaluateur en fait partie
+            for (Auteur auteur : soumission.getAuteurs()) {
+                if (auteur.getId().equals(evaluateur.getId())) {
+                    throw new RuntimeException("Un évaluateur ne peut pas évaluer une soumission dont il est auteur.");
+                }
             }
         }
 
-        // Appeler le service pour affecter les évaluateurs à la soumission
-        soumissionService.affecterEvaluateursParEditeur(soumission, evaluateurs, editeur);
+        // Si un éditeur est spécifié, vérifier que l'éditeur existe et l'affecter
+        if (editeurId != null) {
+            Editeur editeur = editeurRepository.findById(editeurId)
+                    .orElseThrow(() -> new RuntimeException("Éditeur introuvable"));
+            // Appeler le service pour affecter les évaluateurs avec l'éditeur
+            soumissionService.affecterEvaluateursParEditeur(soumission, evaluateurs, editeur);
+        } else {
+            // Affecter les évaluateurs sans l'éditeur
+            soumissionService.affecterEvaluateurs(soumission, evaluateurs);
+        }
 
         return ResponseEntity.ok(soumission);
     }
+
+    
 
 
     // Ajouter un auteur à une soumission
