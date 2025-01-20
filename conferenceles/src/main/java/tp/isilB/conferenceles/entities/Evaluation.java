@@ -39,7 +39,8 @@ public class Evaluation {
     @Column(length = 2000)
     private String commentaires;
 
-    @NotEmpty(message = "L'état de l'évaluation est obligatoire")
-    private String etat; // Exemple : "acceptée", "rejetée", "en révision"
+   @Enumerated(EnumType.STRING)
+    private EtatEvaluation etat; // ACCEPTÉE, REJETÉE, EN_REVISION
 }
+    
 
