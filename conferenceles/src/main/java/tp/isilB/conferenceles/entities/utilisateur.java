@@ -18,29 +18,25 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true) // Visible=true pour inclure le champ "type" dans la sérialisation
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Auteur.class, name = "Auteur"),
-        @JsonSubTypes.Type(value = Editeur.class, name = "Editeur"),
-        @JsonSubTypes.Type(value = Evaluateur.class, name = "Evaluateur")
+        @JsonSubTypes.Type(value = Evaluateur.class, name = "Evaluateur"),
+        @JsonSubTypes.Type(value = Editeur.class, name = "Editeur")
 })
 public abstract class utilisateur {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nom;
-
     private String prenom;
-
     private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"))
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
-
-
-
 }
+

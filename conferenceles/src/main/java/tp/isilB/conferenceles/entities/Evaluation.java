@@ -21,21 +21,25 @@ public class Evaluation {
 
     @ManyToOne
     @JoinColumn(name = "evaluateur_id", nullable = false)
+    @NotNull(message = "Une évaluation doit être liée à un évaluateur")
     private Evaluateur evaluateur;
 
     @ManyToOne
     @JoinColumn(name = "soumission_id", nullable = false)
+    @NotNull(message = "Une évaluation doit être liée à une soumission")
     private Soumission soumission;
+
 
     @NotNull
     @Min(1)
     @Max(10)
     private int note; // Note sur une échelle de 1 à 10
+
     @NotEmpty(message = "Les commentaires sont obligatoires")
     @Column(length = 2000)
     private String commentaires;
 
-   @Enumerated(EnumType.STRING)
-    private EtatEvaluation etat; // ACCEPTÉE, REJETÉE, EN_REVISION
+    @NotEmpty(message = "L'état de l'évaluation est obligatoire")
+    private String etat; // Exemple : "acceptée", "rejetée", "en révision"
 }
 

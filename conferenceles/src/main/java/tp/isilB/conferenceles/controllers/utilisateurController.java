@@ -61,29 +61,26 @@ public class utilisateurController {
         return ResponseEntity.ok(savedEvaluateur);
     }
 
-    @PostMapping("/{id}/roles")
-    public ResponseEntity<utilisateur> addRoleToUtilisateur(@PathVariable Long id, @RequestBody String role) {
+    @PostMapping("/{id}/ajouter-roles")
+    public ResponseEntity<utilisateur> ajouterRoles(
+            @PathVariable Long id,
+            @RequestBody List<String> nouveauxRoles) {
+
         Optional<utilisateur> utilisateurOpt = utilisateurRepository.findById(id);
         if (utilisateurOpt.isPresent()) {
             utilisateur utilisateur = utilisateurOpt.get();
-            utilisateur.getRoles().add(role);
+
+            // Ajouter les nouveaux rôles
+            utilisateur.getRoles().addAll(nouveauxRoles);
+
+            // Sauvegarder l'utilisateur mis à jour
             utilisateurRepository.save(utilisateur);
             return ResponseEntity.ok(utilisateur);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{id}/roles/multiple")
-    public ResponseEntity<utilisateur> addRolesToUtilisateur(@PathVariable Long id, @RequestBody List<String> roles) {
-        Optional<utilisateur> utilisateurOpt = utilisateurRepository.findById(id);
-        if (utilisateurOpt.isPresent()) {
-            utilisateur utilisateur = utilisateurOpt.get();
-            utilisateur.getRoles().addAll(roles); // Ajoute plusieurs rôles
-            utilisateurRepository.save(utilisateur);
-            return ResponseEntity.ok(utilisateur);
-        }
-        return ResponseEntity.notFound().build();
-    }
+
 
     // Récupérer un utilisateur par ID
     @GetMapping("/{id}")
@@ -111,9 +108,10 @@ public class utilisateurController {
             // Mettre à jour les champs nécessaires
             utilisateur.setNom(utilisateurDetails.getNom());
             utilisateur.setEmail(utilisateurDetails.getEmail());
-            // Vous pouvez mettre à jour les rôles si nécessaire
-            utilisateur.getRoles().clear(); // Si vous souhaitez remplacer les rôles
-            utilisateur.getRoles().addAll(utilisateurDetails.getRoles());
+
+            // Mise à jour des rôles pour l'utilisateur
+            utilisateur.getRoles().clear(); // Effacer les anciens rôles
+            utilisateur.getRoles().addAll(utilisateurDetails.getRoles()); // Ajouter les nouveaux rôles
 
             // Sauvegarder l'utilisateur mis à jour
             utilisateurRepository.save(utilisateur);
@@ -122,6 +120,7 @@ public class utilisateurController {
         }
         return ResponseEntity.notFound().build();
     }
+
 
 
 

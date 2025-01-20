@@ -25,8 +25,7 @@ public class ConferencelesApplication implements CommandLineRunner {
 
 	@Autowired
 	private EvaluateurRepository evaluateurRepository;
-	@Autowired
-	private EvaluationRepository evaluationRepository;
+
 	@Autowired
 	private EditeurRepository editeurRepository; // Ajout d'EditeurRepository
 
@@ -71,10 +70,6 @@ public class ConferencelesApplication implements CommandLineRunner {
 		Evaluateur evaluateur2 = evaluateurRepository.save(new Evaluateur("Evaluateur 2","Prenom Evaluateur 2 ","evaluateur2@example.com"));
 		Evaluateur evaluateur3 = evaluateurRepository.save(new Evaluateur("Evaluateur 3", "Prenom Evaluateur 3", "evaluateur1@example.com"));
 
-
-		Evaluation evaluation1 = evaluationRepository.save(new Evaluation(null, evaluateur1, soumission1, 8, "Bon travail.", EtatEvaluation.ACCEPTEE));
-
-
 		// Assignation des évaluateurs aux soumissions
 		soumission1.setEvaluateurs(new ArrayList<>(Arrays.asList(evaluateur1, evaluateur2)));
 		soumissionRepository.save(soumission1);
@@ -84,8 +79,13 @@ public class ConferencelesApplication implements CommandLineRunner {
 
 
 
+
+
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(ConferencelesApplication.class, args);
 	}
 
 }
+
