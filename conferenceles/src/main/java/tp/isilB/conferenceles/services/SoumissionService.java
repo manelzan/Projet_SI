@@ -3,13 +3,10 @@ package tp.isilB.conferenceles.services;
 
 import org.springframework.stereotype.Service;
 import tp.isilB.conferenceles.entities.*;
-import tp.isilB.conferenceles.repositries.utilisateurRepository;
-import tp.isilB.conferenceles.repositries.SoumissionRepository;
+import tp.isilB.conferenceles.repositries.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
-import tp.isilB.conferenceles.repositries.AuteurRepository;
-import tp.isilB.conferenceles.repositries.EvaluateurRepository;
 
 
 import java.util.List;
