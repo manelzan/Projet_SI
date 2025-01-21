@@ -10,6 +10,7 @@ import tp.isilB.conferenceles.repositries.EditeurRepository;
 import tp.isilB.conferenceles.repositries.EvaluateurRepository;
 import tp.isilB.conferenceles.repositries.SoumissionRepository;
 import tp.isilB.conferenceles.services.SoumissionService;
+import tp.isilB.conferenceles.entities.Auteur;
 
 import java.util.List;
 
